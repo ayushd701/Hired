@@ -43,14 +43,12 @@ const LandingPage = () => {
             Find Jobs
           </Button>
         </Link>
-        <Link to="/post-jo">
+        <Link to="/post-job">
           <Button variant="destructive" size="xl">
             Post a Job
           </Button>
         </Link>
       </div>
-
-      {/* carousel */}
 
       <Carousel
         plugins={[
@@ -97,7 +95,7 @@ const LandingPage = () => {
           </CardContent>
         </Card>
       </section>
-      {/* accordian */}
+
       <Accordion type="single" collapsible>
         {faqs.map((faq, index) => {
           return (

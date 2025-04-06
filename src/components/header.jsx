@@ -10,7 +10,7 @@ import {
 } from "@clerk/clerk-react";
 import { Briefcase, Heart, PenBox } from "lucide-react";
 
-const header = () => {
+const Header = () => {
   const [showSignIn, setshowSignIn] = React.useState(false);
   const [search, setSearch] = useSearchParams();
 
@@ -80,4 +80,4 @@ const header = () => {
   );
 };
 
-export default header;
+export default Header;

@@ -8,6 +8,19 @@ const Protected_route = ({children}) => {
   if(isLoaded && !isSignedIn) {
     return <Navigate to="/?signIn=true" />
   }
+
+  if(user!== undefined && !user?.unsafeMetadata?.role && pathname !== '/onboarding') {
+   return <Navigate to="/onboarding" />
+  }
+
+  // if(user.unsafeMetadata.role === "candidate" && pathname === '/post-job') {
+  //   return <Navigate to="/jobs" />
+  // }
+
+  // if(user.unsafeMetadata.role === "recruiter" && pathname === '/jobs') {
+  //   return <Navigate to="/post-job" />
+  // }
+
   return (
     children
   )

@@ -2,17 +2,18 @@ import React, { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
-  SignInButton,
   UserButton,
   SignedOut,
   SignedIn,
   SignIn,
+  useUser,
 } from "@clerk/clerk-react";
 import { Briefcase, Heart, PenBox } from "lucide-react";
 
 const Header = () => {
   const [showSignIn, setshowSignIn] = React.useState(false);
   const [search, setSearch] = useSearchParams();
+  const { user } =useUser();
 
   useEffect(() => {
     if (search.get("signIn") === "true") {
@@ -42,12 +43,13 @@ const Header = () => {
           </SignedOut>
           <SignedIn>
 
-            <Link to="/post-job">
+            {user?.unsafeMetadata?.role === "recruiter" && <Link to="/post-job">
               <Button variant="destructive" className="rounded-full">
                 <PenBox size={20} className="mr-2" />
                 Post a Job
               </Button>
-            </Link>
+            </Link>}
+
             <UserButton appearance={{ elements: { avatarBox: "h-10 w-10" } }}>
               <UserButton.MenuItems>
                 <UserButton.Link
@@ -62,6 +64,7 @@ const Header = () => {
                 />
               </UserButton.MenuItems>
             </UserButton>
+            
           </SignedIn>
         </div>
       </nav>
@@ -73,7 +76,7 @@ const Header = () => {
 "
           onClick={handleOverlayClick}
         >
-          <SignIn signUpForceRedirectUrl="/" fallbackRedirectUrl="/" />
+          <SignIn signUpForceRedirectUrl="/onboarding" fallbackRedirectUrl="/onboarding" />
         </div>
       )}
     </>

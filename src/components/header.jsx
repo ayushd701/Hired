@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
+import { SignInButton, UserButton , SignedOut , SignedIn } from "@clerk/clerk-react";
 
 const header = () => {
   return (
@@ -9,6 +10,14 @@ const header = () => {
         <Link>
           <img src="/logo.png" className="h-20" />
         </Link>
+
+        {/* <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn> */}
+
         <Button variant="outline">Login</Button>
       </nav>
     </>

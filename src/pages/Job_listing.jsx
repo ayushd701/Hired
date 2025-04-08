@@ -8,6 +8,14 @@ import JobCard from "@/components/JobCard";
 import { getCompanies } from "@/api/apicompanies";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { State } from "country-state-city";
 
 const Job_listing = () => {
   const [location, setLocation] = useState("");
@@ -47,10 +55,16 @@ const Job_listing = () => {
     e.preventDefault();
     let formdata = new FormData(e.target);
     const query = formdata.get("search-query");
-    if(query !== "") {
+    if (query !== "") {
       setsearchQuery(query);
     }
-  }
+  };
+
+  const clearFilters = () => {
+    setCompany_id("");
+    setLocation("");
+    setsearchQuery("");
+  };
 
   if (dataJobs?.length !== 0 && dataJobs !== undefined) {
     console.log("dataJobs", dataJobs);
@@ -70,10 +84,66 @@ const Job_listing = () => {
         Latest Jobs
       </h1>
 
-      <form onSubmit={handleSearch} className="h-14 flex w-full gap-4 items-center mb-3">
-        <Input type="text" placeholder="Search by job title..." name="search-query" className="h-full flex-1 px-4 text-md"/>
-        <Button type="submit" variant="blue" className="h-full sm:w-28 ">Search</Button>
+      <form
+        onSubmit={handleSearch}
+        className="h-14 flex w-full gap-4 items-center mb-3"
+      >
+        <Input
+          type="text"
+          placeholder="Search by job title..."
+          name="search-query"
+          className="h-full flex-1 px-4 text-md"
+        />
+        <Button type="submit" variant="blue" className="h-full sm:w-28 ">
+          Search
+        </Button>
       </form>
+
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 flex-wrap">
+        <div className="w-full sm:w-[30%]">
+          <Select
+            value={company_id}
+            onValueChange={(value) => setCompany_id(value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Filter by company" />
+            </SelectTrigger>
+            <SelectContent>
+              {dataCompanies?.map(({ name, id }) => (
+                <SelectItem key={id} value={id}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="w-full sm:w-[30%]">
+          <Select
+            value={location}
+            onValueChange={(value) => setLocation(value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Filter by location" />
+            </SelectTrigger>
+            <SelectContent>
+              {State.getStatesOfCountry("IN")?.map(({ name }) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button
+          onClick={clearFilters}
+          variant="destructive"
+          className="w-full sm:w-[30%]"
+        >
+          Clear filters
+        </Button>
+      </div>
 
       {loadingJobs && (
         <div className="flex justify-center items-center h-screen">
@@ -86,7 +156,13 @@ const Job_listing = () => {
           {dataJobs?.length ? (
             <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {dataJobs.map((job) => {
-                return <JobCard key={job.id} job={job} savedInit={job?.saved?.length > 0} />;
+                return (
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    savedInit={job?.saved?.length > 0}
+                  />
+                );
               })}
             </div>
           ) : (

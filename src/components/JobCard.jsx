@@ -39,9 +39,9 @@ const JobCard = ({
     onJobSaved();
   };
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex justify-between font-bold">
+    <Card className="h-[320px] flex flex-col justify-between">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex justify-between font-bold text-base line-clamp-1">
           {job.title}
           {isMyJob && (
             <Trash2Icon
@@ -53,7 +53,7 @@ const JobCard = ({
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-4 flex-1">
+      <CardContent className="flex flex-col gap-3 flex-1 text-sm">
         <div className="flex justify-between items-center">
           {job.company && (
             <img src={job.company.logo_url} alt="logo" className="h-4 sm:h-6" />
@@ -63,7 +63,9 @@ const JobCard = ({
           </div>
         </div>
         <hr />
-        {job.description.substring(0, job.description.indexOf(".") + 1)}
+        <p className="line-clamp-3">
+          {job.description.substring(0, job.description.indexOf(".") + 1)}
+        </p>
       </CardContent>
 
       <CardFooter className="flex gap-2">

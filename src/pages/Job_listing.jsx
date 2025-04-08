@@ -15,6 +15,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+
 import { State } from "country-state-city";
 
 const Job_listing = () => {
@@ -64,6 +74,23 @@ const Job_listing = () => {
     setCompany_id("");
     setLocation("");
     setsearchQuery("");
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
+  const totalPages = Math.ceil((dataJobs?.length || 0) / itemsPerPage);
+
+  const paginatedJobs = dataJobs?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo(0, 0);
+    }
   };
 
   if (dataJobs?.length !== 0 && dataJobs !== undefined) {
@@ -153,9 +180,9 @@ const Job_listing = () => {
 
       {loadingJobs === false && (
         <div>
-          {dataJobs?.length ? (
+          {paginatedJobs?.length ? (
             <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {dataJobs.map((job) => {
+              {paginatedJobs.map((job) => {
                 return (
                   <JobCard
                     key={job.id}
@@ -170,6 +197,43 @@ const Job_listing = () => {
           )}
         </div>
       )}
+
+      <Pagination className="mt-8 justify-center">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => goToPage(currentPage - 1)}
+              className={
+                currentPage === 1 ? "pointer-events-none opacity-50" : ""
+              }
+            />
+          </PaginationItem>
+
+          {[...Array(totalPages)].map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                onClick={() => goToPage(index + 1)}
+                isActive={currentPage === index + 1}
+                href="#"
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
+          <PaginationItem>
+            <PaginationNext
+              onClick={() => goToPage(currentPage + 1)}
+              className={
+                currentPage === totalPages
+                  ? "pointer-events-none opacity-50"
+                  : ""
+              }
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+      
     </div>
   );
 };

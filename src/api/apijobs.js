@@ -6,7 +6,7 @@ export async function getJobs(
 ) {
   const supabase = createSupabaseClientWithToken(accessToken);
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("jobs")
     .select("* , company: companies(name , logo_url) , saved: saved_jobs(id)");
 
@@ -21,6 +21,8 @@ export async function getJobs(
   if (searchQuery) {
     query = query.ilike("title", `%${searchQuery}%`);
   }
+
+  const { data , error } = await query
 
   if (error) {
     console.error("Error fetching jobs", error);

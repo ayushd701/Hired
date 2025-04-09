@@ -73,3 +73,19 @@ export async function getSingleJob(accessToken , {job_id}) {
   }
   return jobData;
 }
+
+export async function updateHiringStatus(accessToken , {job_id} , isOpen) {
+  const supabase = createSupabaseClientWithToken(accessToken);
+
+  const { data: updateData, error: updateError } = await supabase
+    .from("jobs")
+    .update({isOpen})
+    .eq("id" , job_id)
+    .select()
+
+  if (updateError) {
+    console.error("Error updating hiring status", updateError);
+    return null;
+  }
+  return updateData;
+}

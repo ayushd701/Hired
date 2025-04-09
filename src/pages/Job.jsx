@@ -1,4 +1,4 @@
-import { getSingleJob } from "@/api/apijobs";
+import { getSingleJob, updateHiringStatus } from "@/api/apijobs";
 import { useUser } from "@clerk/clerk-react";
 import React from "react";
 import { data, useParams } from "react-router-dom";
@@ -7,6 +7,13 @@ import { BarLoader } from "react-spinners";
 import { useSession } from "@clerk/clerk-react";
 import { Briefcase, DoorClosed, DoorOpen, MapPin } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Job = () => {
   const { isLoaded, user } = useUser();
@@ -19,6 +26,16 @@ const Job = () => {
     fn: fnJob,
   } = useFetch(getSingleJob, { job_id: id });
 
+  const { loading: loadingHiringStatus, fn: fnHiringStatus } = useFetch(
+    updateHiringStatus,
+    { job_id: id }
+  );
+
+  const handleStatusChange = (value) => {
+    const isOpen = value === "Open";
+    fnHiringStatus(isOpen).then(() => fnJob());
+  };
+
   const { session } = useSession();
 
   React.useEffect(() => {
@@ -29,7 +46,7 @@ const Job = () => {
 
   console.log(dataJob);
 
-  if (!isLoaded || loadingJob) {
+  if (!isLoaded || loadingJob || loadingHiringStatus) {
     return (
       <div className="flex justify-center items-center h-screen">
         <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />
@@ -70,10 +87,35 @@ const Job = () => {
           )}
         </div>
       </div>
+      {dataJob?.recruiter_id === user?.id && (
+        <Select onValueChange={handleStatusChange}>
+          <SelectTrigger
+            className={`w-full ${
+              dataJob?.isOpen ? "bg-green-950" : "bg-red-950"
+            }`}
+          >
+            <SelectValue
+              placeholder={
+                "Hiring Status " + (dataJob?.isOpen ? "( Open )" : "( Closed )")
+              }
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Open">Open</SelectItem>
+            <SelectItem value="Closed">Closed</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
+
       <h2 className="text-2xl sm:text-3xl font-bold">About the job</h2>
       <p className="sm:text-lg">{dataJob?.description}</p>
-      <h2 className="text-2xl sm:text-3xl font-bold">What we are looking for</h2>
-      <MDEditor.Markdown source={dataJob?.requirements} className="!bg-transparent sm:text-lg"/>
+      <h2 className="text-2xl sm:text-3xl font-bold">
+        What we are looking for
+      </h2>
+      <MDEditor.Markdown
+        source={dataJob?.requirements}
+        className="!bg-transparent sm:text-lg"
+      />
     </div>
   );
 };

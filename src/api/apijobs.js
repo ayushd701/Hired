@@ -57,3 +57,19 @@ export async function saveJob(accessToken, { alreadySaved }, saveData) {
     return data;
   }
 }
+
+export async function getSingleJob(accessToken , {job_id}) {
+  const supabase = createSupabaseClientWithToken(accessToken);
+
+  const { data: jobData, error: jobError } = await supabase
+    .from("jobs")
+    .select("* , company: companies(name , logo_url) , applications: applications(*) ")
+    .eq("id" , job_id)
+    .single()
+
+  if (jobError) {
+    console.error("Error fetching job", jobError);
+    return null;
+  }
+  return jobData;
+}

@@ -39,7 +39,7 @@ const ApplicationCard = ({ application, isCandidate = false }) => {
 
   return (
     <Card>
-      {!loadingUpdate && (
+      {loadingUpdate && (
         <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />
       )}
       <CardHeader>

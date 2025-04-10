@@ -4,7 +4,6 @@ import React from "react";
 import { data, useParams } from "react-router-dom";
 import useFetch from "@/hooks/use-fetch";
 import { BarLoader } from "react-spinners";
-import { useSession } from "@clerk/clerk-react";
 import { Briefcase, DoorClosed, DoorOpen, MapPin } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
 import {
@@ -14,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ApplyJobDrawer from "@/components/ApplyJobDrawer";
 
 const Job = () => {
   const { isLoaded, user } = useUser();
@@ -36,17 +36,15 @@ const Job = () => {
     fnHiringStatus(isOpen).then(() => fnJob());
   };
 
-  const { session } = useSession();
-
   React.useEffect(() => {
-    if (isLoaded && session) {
+    if (isLoaded) {
       fnJob();
     }
-  }, [isLoaded, session]);
+  }, [isLoaded]);
 
   console.log(dataJob);
 
-  if (!isLoaded || loadingJob || loadingHiringStatus) {
+  if (!isLoaded || loadingJob) {
     return (
       <div className="flex justify-center items-center h-screen">
         <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />
@@ -116,6 +114,9 @@ const Job = () => {
         source={dataJob?.requirements}
         className="!bg-transparent sm:text-lg"
       />
+      {dataJob?.recruiter_id !== user?.id && 
+      <ApplyJobDrawer job={dataJob} user={user} fetchJob= {fnJob} applied={dataJob?.applications?.some(app => app.candidate_id === user?.id)}  />
+       }
     </div>
   );
 };

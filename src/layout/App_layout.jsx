@@ -10,7 +10,8 @@ const App_layout = () => {
         <Header />
         <Outlet />
       </main>
-      <div className="p-10 text-center bg-gray-800 mt-10">Made by Ayush Dixit</div>
+      <hr className="mt-5"/>
+      <div className="p-4 text-center bg-transparent">Made by Ayush Dixit</div>
     </div>
   );
 };

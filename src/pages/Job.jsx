@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ApplyJobDrawer from "@/components/ApplyJobDrawer";
+import ApplicationCard from "@/components/ApplicationCard";
 
 const Job = () => {
   const { isLoaded, user } = useUser();
@@ -116,6 +117,16 @@ const Job = () => {
       />
       {dataJob?.recruiter_id !== user?.id && 
       <ApplyJobDrawer job={dataJob} user={user} fetchJob= {fnJob} applied={dataJob?.applications?.some(app => app.candidate_id === user?.id)}  />
+       }
+       {
+        dataJob?.applications.length > 0 && dataJob?.recruiter_id === user?.id && (
+          <div className="flex flex-col gap-2">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-5">Applications</h2>
+            {dataJob?.applications.map((application) => {
+              return <ApplicationCard key={application.id} application={application} isCandidate={application.candidate_id === user?.id}/>
+            })}
+          </div>
+        )
        }
     </div>
   );

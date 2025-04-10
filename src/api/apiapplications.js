@@ -26,3 +26,19 @@ export async function applyToJob(accessToken , _ ,jobData) {
   }
   return applyJobData;
 }
+
+export async function updateApplicationStatus(accessToken , {job_id} , status) {
+  const supabase = createSupabaseClientWithToken(accessToken);
+
+  const { data: updateData, error: updateDataError } = await supabase
+    .from("applications")
+    .update({status})
+    .eq("job_id" ,job_id)
+    .select()
+
+  if (updateDataError || updateData.length === 0) {
+    console.error("Error updating status", updateDataError);
+    return null;
+  }
+  return updateData;
+}

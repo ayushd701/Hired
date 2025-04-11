@@ -22,7 +22,7 @@ export async function getJobs(
     query = query.ilike("title", `%${searchQuery}%`);
   }
 
-  const { data , error } = await query
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error fetching jobs", error);
@@ -45,7 +45,7 @@ export async function saveJob(accessToken, { alreadySaved }, saveData) {
     }
     return data;
   } else {
-    const { data, error:insertError } = await supabase
+    const { data, error: insertError } = await supabase
       .from("saved_jobs")
       .insert([saveData])
       .select();
@@ -58,14 +58,16 @@ export async function saveJob(accessToken, { alreadySaved }, saveData) {
   }
 }
 
-export async function getSingleJob(accessToken , {job_id}) {
+export async function getSingleJob(accessToken, { job_id }) {
   const supabase = createSupabaseClientWithToken(accessToken);
 
   const { data: jobData, error: jobError } = await supabase
     .from("jobs")
-    .select("* , company: companies(name , logo_url) , applications: applications(*) ")
-    .eq("id" , job_id)
-    .single()
+    .select(
+      "* , company: companies(name , logo_url) , applications: applications(*) "
+    )
+    .eq("id", job_id)
+    .single();
 
   if (jobError) {
     console.error("Error fetching job", jobError);
@@ -74,14 +76,14 @@ export async function getSingleJob(accessToken , {job_id}) {
   return jobData;
 }
 
-export async function updateHiringStatus(accessToken , {job_id} , isOpen) {
+export async function updateHiringStatus(accessToken, { job_id }, isOpen) {
   const supabase = createSupabaseClientWithToken(accessToken);
 
   const { data: updateData, error: updateError } = await supabase
     .from("jobs")
-    .update({isOpen})
-    .eq("id" , job_id)
-    .select()
+    .update({ isOpen })
+    .eq("id", job_id)
+    .select();
 
   if (updateError) {
     console.error("Error updating hiring status", updateError);
@@ -90,17 +92,33 @@ export async function updateHiringStatus(accessToken , {job_id} , isOpen) {
   return updateData;
 }
 
-export async function addNewJob(accessToken , _ , jobData) {
+export async function addNewJob(accessToken, _, jobData) {
   const supabase = createSupabaseClientWithToken(accessToken);
 
   const { data: addJobData, error: addJobError } = await supabase
     .from("jobs")
     .insert([jobData])
-    .select()
+    .select();
 
   if (addJobError) {
     console.error("Error adding new job", addJobError);
     return null;
   }
   return addJobData;
+}
+
+export async function getSavedJobs(accessToken) {
+  const supabase = createSupabaseClientWithToken(accessToken);
+
+  let query = supabase
+    .from("saved_jobs")
+    .select("* , job:jobs(* , company: companies(name , logo_url))");
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching saved jobs", error);
+    return null;
+  }
+  return data;
 }

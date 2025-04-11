@@ -89,3 +89,18 @@ export async function updateHiringStatus(accessToken , {job_id} , isOpen) {
   }
   return updateData;
 }
+
+export async function addNewJob(accessToken , _ , jobData) {
+  const supabase = createSupabaseClientWithToken(accessToken);
+
+  const { data: addJobData, error: addJobError } = await supabase
+    .from("jobs")
+    .insert([jobData])
+    .select()
+
+  if (addJobError) {
+    console.error("Error adding new job", addJobError);
+    return null;
+  }
+  return addJobData;
+}

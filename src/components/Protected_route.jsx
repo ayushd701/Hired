@@ -13,14 +13,6 @@ const Protected_route = ({children}) => {
    return <Navigate to="/onboarding" />
   }
 
-  // if(user.unsafeMetadata.role === "candidate" && pathname === '/post-job') {
-  //   return <Navigate to="/jobs" />
-  // }
-
-  // if(user.unsafeMetadata.role === "recruiter" && pathname === '/jobs') {
-  //   return <Navigate to="/post-job" />
-  // }
-
   return (
     children
   )

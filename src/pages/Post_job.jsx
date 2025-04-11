@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -12,14 +12,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { State } from "country-state-city";
+import { State, City } from "country-state-city";
 import useFetch from "@/hooks/use-fetch";
 import { getCompanies } from "@/api/apicompanies";
 import { useUser } from "@clerk/clerk-react";
 import { useSession } from "@clerk/clerk-react";
 import { BarLoader } from "react-spinners";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import MDEditor from "@uiw/react-md-editor";
+import { addNewJob } from "@/api/apijobs";
 
 const jobSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -31,6 +32,8 @@ const jobSchema = z.object({
 
 const Post_job = () => {
   const { isLoaded, user } = useUser();
+  const navigate = useNavigate();
+  const [selectedState, setSelectedState] = useState("");
 
   const {
     register,
@@ -49,11 +52,26 @@ const Post_job = () => {
     fn: fnCompanies,
   } = useFetch(getCompanies);
 
+  const {
+    data: dataNewJob,
+    loading: loadingNewJob,
+    error: errorNewJob,
+    fn: fnNewJob,
+  } = useFetch(addNewJob);
+
   useEffect(() => {
     if (isLoaded) {
       fnCompanies();
     }
   }, [isLoaded]);
+
+  const onSubmit = (data) => {
+    fnNewJob({ ...data, recruiter_id: user.id, isOpen: true });
+  };
+
+  useEffect(() => {
+    if (dataNewJob?.length > 0) navigate("/jobs");
+  }, [loadingNewJob]);
 
   if (!isLoaded || loadingCompanies) {
     return (
@@ -73,7 +91,10 @@ const Post_job = () => {
       <h1 className="gradient-title font-extrabold text-5xl sm:text-7xl text-center pb-8">
         Post a Job
       </h1>
-      <form className="flex flex-col gap-4 p-4 pb-0">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-4 p-4 pb-0"
+      >
         <Input placeholder="Job Title" {...register("title")} />
         {errors.title && <p className="text-red-500">{errors.title.message}</p>}
         <Textarea placeholder="Job Description" {...register("description")} />
@@ -81,20 +102,45 @@ const Post_job = () => {
           <p className="text-red-500">{errors.description.message}</p>
         )}
         <div className="flex gap-4 items-center">
+          <Select
+            value={selectedState}
+            onValueChange={(value) => {
+              setSelectedState(value);
+              setValue("location", ""); // Clear city when state changes
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select State" />
+            </SelectTrigger>
+            <SelectContent>
+              {State.getStatesOfCountry("IN")?.map(({ name }) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Controller
             name="location"
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Filter by location" />
+                  <SelectValue placeholder="Select City" />
                 </SelectTrigger>
                 <SelectContent>
-                  {State.getStatesOfCountry("IN")?.map(({ name }) => (
-                    <SelectItem key={name} value={name}>
-                      {name}
-                    </SelectItem>
-                  ))}
+                  {selectedState &&
+                    City.getCitiesOfState(
+                      "IN",
+                      State.getStatesOfCountry("IN").find(
+                        (s) => s.name === selectedState
+                      )?.isoCode
+                    )?.map(({ name }) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             )}
@@ -129,13 +175,33 @@ const Post_job = () => {
         {errors.company_id && (
           <p className="text-red-500">{errors.company_id.message}</p>
         )}
-        <Controller name="requirements" control={control} render={({field}) => (
-          <MDEditor value={field.value} onChange={field.onChange} />
-        )}/>
+        <Controller
+          name="requirements"
+          control={control}
+          render={({ field }) => (
+            <MDEditor
+              value={field.value}
+              onChange={field.onChange}
+              textareaProps={{
+                placeholder: "Requirements...",
+                name: field.name,
+              }}
+            />
+          )}
+        />
         {errors.requirements && (
           <p className="text-red-500">{errors.requirements.message}</p>
         )}
-        <Button type="submit" variant="blue" size="lg" className="mt-2">Submit</Button>
+        {errorNewJob && <p className="text-red-500">{errorNewJob?.message}</p>}
+        {loadingNewJob ? (
+          <div className="flex justify-center items-center">
+            <BarLoader color="#36d7b7" width="100%" className="mb-4" />
+          </div>
+        ) : (
+          <Button variant="blue" type="submit" size="lg" className="mt-2">
+            Submit
+          </Button>
+        )}
       </form>
     </div>
   );

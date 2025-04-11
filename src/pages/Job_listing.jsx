@@ -23,12 +23,13 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
 
-import { State } from "country-state-city";
+import { State , City } from "country-state-city";
 
 const Job_listing = () => {
-  const [location, setLocation] = useState("");
+  const [stateCode, setStateCode] = useState("");
+  const [city, setCity] = useState("");
   const [company_id, setCompany_id] = useState("");
   const [searchQuery, setsearchQuery] = useState("");
 
@@ -40,7 +41,7 @@ const Job_listing = () => {
     loading: loadingJobs,
     error: errorJobs,
     fn: fnJobs,
-  } = useFetch(getJobs, { location, company_id, searchQuery });
+  } = useFetch(getJobs, { location: city, company_id, searchQuery });
 
   const {
     data: dataCompanies,
@@ -53,7 +54,7 @@ const Job_listing = () => {
     if (isLoaded && session) {
       fnJobs();
     }
-  }, [isLoaded, session, location, company_id, searchQuery]);
+  }, [isLoaded, session, city, company_id, searchQuery]);
 
   useEffect(() => {
     if (isLoaded && session) {
@@ -72,7 +73,8 @@ const Job_listing = () => {
 
   const clearFilters = () => {
     setCompany_id("");
-    setLocation("");
+    setStateCode("");
+    setCity("");
     setsearchQuery("");
   };
 
@@ -145,23 +147,43 @@ const Job_listing = () => {
           </Select>
         </div>
 
-        <div className="w-full sm:w-[30%]">
+        <div className="w-full sm:w-[15%]">
           <Select
-            value={location}
-            onValueChange={(value) => setLocation(value)}
+            value={stateCode}
+            onValueChange={(code) => {
+              setStateCode(code);
+              setCity("");
+            }}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Filter by location" />
+              <SelectValue placeholder="Filter by state" />
             </SelectTrigger>
             <SelectContent>
-              {State.getStatesOfCountry("IN")?.map(({ name }) => (
-                <SelectItem key={name} value={name}>
+              {State.getStatesOfCountry("IN")?.map(({ isoCode, name }) => (
+                <SelectItem key={isoCode} value={isoCode}>
                   {name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
+
+        {stateCode && (
+          <div className="w-full sm:w-[15%]">
+            <Select value={city} onValueChange={(val) => setCity(val)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Filter by city" />
+              </SelectTrigger>
+              <SelectContent>
+                {City.getCitiesOfState("IN", stateCode)?.map(({ name }) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <Button
           onClick={clearFilters}
@@ -193,7 +215,14 @@ const Job_listing = () => {
               })}
             </div>
           ) : (
-            <div>No jobs found</div>
+            <div className="flex flex-col items-center justify-center text-center mt-5 p-8 bg-transparent rounded-lg shadow-inner">
+              <h2 className="text-xl font-semibold text-gray-600">
+                No Jobs Found
+              </h2>
+              <p className="text-gray-500 mt-2">
+                Try changing your filters or check back later.
+              </p>
+            </div>
           )}
         </div>
       )}
@@ -233,7 +262,6 @@ const Job_listing = () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      
     </div>
   );
 };

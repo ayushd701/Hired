@@ -36,15 +36,14 @@ const Post_job = () => {
   const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
-
-
+  
   const {
     register,
     control,
     formState: { errors },
     handleSubmit,
   } = useForm({
-    mode: "onSubmit" ,
+    mode: "onSubmit",
     defaultValues: { location: "", company_id: "", requirements: "" },
     resolver: zodResolver(jobSchema),
   });
@@ -88,7 +87,17 @@ const Post_job = () => {
 
   console.log(user);
   if (user?.unsafeMetadata?.role === "candidate") {
-    return <Navigate to="/jobs" />;
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-center p-4">
+        <h2 className="text-2xl font-semibold mb-2">Access Denied</h2>
+        <p className="text-muted-foreground text-lg mb-6 max-w-md">
+          You’re currently signed in as a <strong>candidate</strong>. Only
+          recruiter accounts can post jobs.
+          <br />
+          To post a job, please sign up or switch to a recruiter account.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -101,7 +110,9 @@ const Post_job = () => {
         className="flex flex-col gap-4 p-4 pb-0"
       >
         <Input placeholder="Job Title" {...register("title")} />
-        {formSubmitted && errors.title && <p className="text-red-500">{errors.title.message}</p>}
+        {formSubmitted && errors.title && (
+          <p className="text-red-500">{errors.title.message}</p>
+        )}
         <Textarea placeholder="Job Description" {...register("description")} />
         {formSubmitted && errors.description && (
           <p className="text-red-500">{errors.description.message}</p>

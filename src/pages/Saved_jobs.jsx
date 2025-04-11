@@ -47,7 +47,7 @@ const Saved_jobs = () => {
                   <JobCard
                     key={saved.id}
                     job={saved.job}
-                    savedInit="true"
+                    savedInit={true}
                     onJobSaved={fnSaved}
                   />
                 );
@@ -58,9 +58,6 @@ const Saved_jobs = () => {
               <h2 className="text-xl font-semibold text-gray-600">
                 No Saved Jobs Found
               </h2>
-              <p className="text-gray-500 mt-2">
-                Try changing your filters or check back later.
-              </p>
             </div>
           )}
         </div>

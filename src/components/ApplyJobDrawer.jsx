@@ -134,12 +134,15 @@ const ApplyJobDrawer = ({ user, job, fetchJob, applied = false }) => {
           {errors.education && (
             <p className="text-red-500">{errors.education.message}</p>
           )}
-          <Input
+          <div className="flex items-center">
+            <span className="text-sm mr-1">Upload resume (PDF, DOCX)</span>
+            <Input
             type="file"
             accept=".pdf , .doc , .docx"
             className="flex-1 file:text-gray-500"
             {...register("resume")}
           />
+          </div>
           {errors.resume && (
             <p className="text-red-500">{errors.resume.message}</p>
           )}

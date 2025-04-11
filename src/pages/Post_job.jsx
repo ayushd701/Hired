@@ -21,6 +21,7 @@ import { BarLoader } from "react-spinners";
 import { Navigate, useNavigate } from "react-router-dom";
 import MDEditor from "@uiw/react-md-editor";
 import { addNewJob } from "@/api/apijobs";
+import AddCompanyDrawer from "@/components/AddCompanyDrawer";
 
 const jobSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -34,6 +35,8 @@ const Post_job = () => {
   const { isLoaded, user } = useUser();
   const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
 
   const {
     register,
@@ -41,6 +44,7 @@ const Post_job = () => {
     formState: { errors },
     handleSubmit,
   } = useForm({
+    mode: "onSubmit" ,
     defaultValues: { location: "", company_id: "", requirements: "" },
     resolver: zodResolver(jobSchema),
   });
@@ -66,6 +70,7 @@ const Post_job = () => {
   }, [isLoaded]);
 
   const onSubmit = (data) => {
+    setFormSubmitted(true);
     fnNewJob({ ...data, recruiter_id: user.id, isOpen: true });
   };
 
@@ -96,9 +101,9 @@ const Post_job = () => {
         className="flex flex-col gap-4 p-4 pb-0"
       >
         <Input placeholder="Job Title" {...register("title")} />
-        {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+        {formSubmitted && errors.title && <p className="text-red-500">{errors.title.message}</p>}
         <Textarea placeholder="Job Description" {...register("description")} />
-        {errors.description && (
+        {formSubmitted && errors.description && (
           <p className="text-red-500">{errors.description.message}</p>
         )}
         <div className="flex gap-4 items-center">
@@ -168,11 +173,12 @@ const Post_job = () => {
               </Select>
             )}
           />
+          <AddCompanyDrawer fetchCompanies={fnCompanies} />
         </div>
-        {errors.location && (
+        {formSubmitted && errors.location && (
           <p className="text-red-500">{errors.location.message}</p>
         )}
-        {errors.company_id && (
+        {formSubmitted && errors.company_id && (
           <p className="text-red-500">{errors.company_id.message}</p>
         )}
         <Controller
@@ -189,7 +195,7 @@ const Post_job = () => {
             />
           )}
         />
-        {errors.requirements && (
+        {formSubmitted && errors.requirements && (
           <p className="text-red-500">{errors.requirements.message}</p>
         )}
         {errorNewJob && <p className="text-red-500">{errorNewJob?.message}</p>}

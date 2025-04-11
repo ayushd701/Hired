@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
-import { ThemeProvider } from "./components/Theme_provider";
+import { ThemeProvider } from "./components/ThemeProvider";
 import App_layout from "./layout/App_layout";
 import {
   Job,

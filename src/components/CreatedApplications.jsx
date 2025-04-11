@@ -34,7 +34,7 @@ const CreatedApplications = () => {
       No applications yet.
     </p>
   ) : (
-    dataApplications.map((application) => (
+    dataApplications?.map((application) => (
       <ApplicationCard
         key={application.id}
         application={application}

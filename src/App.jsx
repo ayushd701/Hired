@@ -1,21 +1,21 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
 import { ThemeProvider } from "./components/ThemeProvider";
-import App_layout from "./layout/Applayout";
+import Applayout from "./layout/Applayout";
 import {
   Job,
   Job_listing,
   LandingPage,
   My_Jobs,
   Onboarding,
-  Post_job,
-  Saved_jobs,
+  Postjob,
+  Savedjobs,
 } from "./pages/index.js";
-import Protected_route from "./components/Protectedroute";
+import Protectedroute from "./components/Protectedroute";
 
 const router = createBrowserRouter([
   {
-    element: <App_layout />,
+    element: <Applayout />,
     children: [
       {
         path: "/",
@@ -24,44 +24,44 @@ const router = createBrowserRouter([
       {
         path: "/onboarding",
         element: 
-          <Protected_route>
+          <Protectedroute>
             <Onboarding />
-          </Protected_route>,
+          </Protectedroute>,
       },
       {
         path: "/jobs",
         element: 
-          <Protected_route>
+          <Protectedroute>
             <Job_listing />
-          </Protected_route>,
+          </Protectedroute>,
       },
       {
         path: "/job/:id",
         element: 
-          <Protected_route>
+          <Protectedroute>
             <Job />
-          </Protected_route>,
+          </Protectedroute>,
       },
       {
         path: "/post-job",
         element: 
-          <Protected_route>
-            <Post_job />
-          </Protected_route>,
+          <Protectedroute>
+            <Postjob />
+          </Protectedroute>,
       },
       {
         path: "/saved-jobs",
         element: 
-          <Protected_route>
-            <Saved_jobs />
-          </Protected_route>,
+          <Protectedroute>
+            <Savedjobs />
+          </Protectedroute>,
       },
       {
         path: "/my-jobs",
         element: 
-          <Protected_route>
+          <Protectedroute>
             <My_Jobs />
-          </Protected_route>,
+          </Protectedroute>,
       },
     ],
   },

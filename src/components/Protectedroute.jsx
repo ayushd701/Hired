@@ -1,7 +1,7 @@
 import { useUser } from '@clerk/clerk-react'
 import { Navigate, useLocation } from 'react-router-dom'
 
-const Protected_route = ({children}) => {
+const Protectedroute = ({children}) => {
   const {isSignedIn , user , isLoaded} = useUser()
   const { pathname } = useLocation()
 
@@ -18,4 +18,4 @@ const Protected_route = ({children}) => {
   )
 }
 
-export default Protected_route
+export default Protectedroute

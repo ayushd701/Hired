@@ -31,7 +31,7 @@ const jobSchema = z.object({
   requirements: z.string().min(1, { message: "Requirements are required" }),
 });
 
-const Post_job = () => {
+const Postjob = () => {
   const { isLoaded, user } = useUser();
   const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState("");
@@ -224,4 +224,4 @@ const Post_job = () => {
   );
 };
 
-export default Post_job;
+export default Postjob;

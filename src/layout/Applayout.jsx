@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
 
-const App_layout = () => {
+const Applayout = () => {
   return (
     <div>
       <div className="grid-background"></div>
@@ -16,4 +16,4 @@ const App_layout = () => {
   );
 };
 
-export default App_layout;
+export default Applayout;

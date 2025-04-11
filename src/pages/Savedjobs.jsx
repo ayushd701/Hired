@@ -6,7 +6,7 @@ import { BarLoader } from "react-spinners";
 import JobCard from "@/components/JobCard";
 
 
-const Saved_jobs = () => {
+const Savedjobs = () => {
   const { isLoaded, user } = useUser();
   const {
     data: savedData,
@@ -66,4 +66,4 @@ const Saved_jobs = () => {
   );
 };
 
-export default Saved_jobs;
+export default Savedjobs;

@@ -42,3 +42,20 @@ export async function updateApplicationStatus(accessToken , {job_id} , status) {
   }
   return updateData;
 }
+
+export async function getApplications(accessToken , {user_id}) {
+  const supabase = createSupabaseClientWithToken(accessToken);
+
+  let query = supabase
+    .from("applications")
+    .select("* , job:jobs(title , company: companies(name))")
+    .eq("candidate_id" , user_id)
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching applications", error);
+    return null;
+  }
+  return data;
+}

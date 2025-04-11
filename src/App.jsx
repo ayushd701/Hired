@@ -4,9 +4,9 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import Applayout from "./layout/Applayout";
 import {
   Job,
-  Job_listing,
+  Joblisting,
   LandingPage,
-  My_Jobs,
+  Myjobs,
   Onboarding,
   Postjob,
   Savedjobs,
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
         path: "/jobs",
         element: 
           <Protectedroute>
-            <Job_listing />
+            <Joblisting />
           </Protectedroute>,
       },
       {
@@ -60,7 +60,7 @@ const router = createBrowserRouter([
         path: "/my-jobs",
         element: 
           <Protectedroute>
-            <My_Jobs />
+            <Myjobs />
           </Protectedroute>,
       },
     ],

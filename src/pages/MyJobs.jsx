@@ -5,7 +5,7 @@ import { BarLoader } from "react-spinners";
 import CreatedApplications from "@/components/CreatedApplications";
 import CreatedJobs from "@/components/CreatedJobs";
 
-const My_Jobs = () => {
+const Myjobs = () => {
   const { isLoaded, user } = useUser();
   if (!isLoaded) {
     return (
@@ -24,4 +24,4 @@ const My_Jobs = () => {
   );
 };
 
-export default My_Jobs;
+export default Myjobs;

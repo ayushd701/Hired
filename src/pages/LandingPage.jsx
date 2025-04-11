@@ -12,7 +12,12 @@ import {
   CardTitle,
   CardContent,
 } from "../components/ui/card";
-import {Accordion,AccordionItem,AccordionTrigger,AccordionContent} from "../components/ui/accordion"
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../components/ui/accordion";
 import companies from "../data/companies.json";
 import faqs from "../data/faq.json";
 import Autoplay from "embla-carousel-autoplay";
@@ -73,7 +78,11 @@ const LandingPage = () => {
         </CarouselContent>
       </Carousel>
 
-      <img src="/banner.jpeg" alt="" className="w-full" />
+      <img
+        src="/Appbanner.png"
+        alt="Hired App Banner"
+        className="w-full max-h-[500px] object-fit rounded-lg sm:rounded-xl md:rounded-2xl"
+      />
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>

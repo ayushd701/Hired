@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { saveJob } from "@/api/apijobs";
 import useFetch from "@/hooks/use-fetch";
+import { deleteMyJobs } from "@/api/apijobs";
+import { BarLoader } from "react-spinners";
 
 const JobCard = ({
   job,
@@ -38,19 +40,37 @@ const JobCard = ({
     await fnSavedJobs({ user_id: user.id, job_id: job.id });
     onJobSaved();
   };
+
+
+  const {
+    data: deleteJob,
+    loading: loadingDeleteJob,
+    error: errorDeleteJob,
+    fn: fnDeleteJob,
+  } = useFetch(deleteMyJobs, { job_id: job.id });
+
+  const handleDeleteJob = async () => {
+    await fnDeleteJob();
+    onJobSaved();
+  };
+
   return (
     <Card className="h-[320px] flex flex-col justify-between">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex justify-between font-bold text-base line-clamp-1">
+      {loadingDeleteJob && (
+        <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />
+      )}
+      <CardHeader className="pb-2 flex justify-between items-center">
+        <CardTitle className="font-bold text-base line-clamp-1 truncate">
           {job.title}
-          {isMyJob && (
-            <Trash2Icon
-              fill="red"
-              size={18}
-              className="text-red-300 cursor-pointer"
-            />
-          )}
         </CardTitle>
+        {isMyJob && (
+          <Trash2Icon
+            fill="red"
+            size={18}
+            className="text-red-300 cursor-pointer flex-shrink-0"
+            onClick={handleDeleteJob}
+          />
+        )}
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3 flex-1 text-sm">

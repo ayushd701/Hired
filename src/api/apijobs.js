@@ -122,3 +122,39 @@ export async function getSavedJobs(accessToken) {
   }
   return data;
 }
+
+export async function getCreatedJobs(accessToken , {recruiter_id}) {
+  const supabase = createSupabaseClientWithToken(accessToken);
+
+  let query = supabase
+    .from("jobs")
+    .select("*,company: companies(name , logo_url)")
+    .eq("recruiter_id" , recruiter_id)
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching created jobs", error);
+    return null;
+  }
+  return data;
+}
+
+export async function deleteMyJobs(accessToken , {job_id}) {
+  const supabase = createSupabaseClientWithToken(accessToken);
+
+  let query = supabase
+    .from("jobs")
+    .delete()
+    .eq("id" , job_id)
+    .select()
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error deleting jobs", error);
+    return null;
+  }
+  return data;
+}
+

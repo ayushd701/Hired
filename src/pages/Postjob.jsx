@@ -101,28 +101,31 @@ const Postjob = () => {
   }
 
   return (
-    <div>
-      <h1 className="gradient-title font-extrabold text-5xl sm:text-7xl text-center pb-8">
+    <div className="w-full max-w-screen overflow-x-hidden px-4 sm:px-6 md:px-12">
+      <h1 className="gradient-title font-extrabold text-3xl sm:text-5xl text-center pb-6 sm:pb-8">
         Post a Job
       </h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 p-4 pb-0"
+        className="flex flex-col gap-4 w-full max-w-4xl mx-auto"
       >
         <Input placeholder="Job Title" {...register("title")} />
         {formSubmitted && errors.title && (
           <p className="text-red-500">{errors.title.message}</p>
         )}
+  
         <Textarea placeholder="Job Description" {...register("description")} />
         {formSubmitted && errors.description && (
           <p className="text-red-500">{errors.description.message}</p>
         )}
-        <div className="flex gap-4 items-center">
+  
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* State Select */}
           <Select
             value={selectedState}
             onValueChange={(value) => {
               setSelectedState(value);
-              setValue("location", ""); // Clear city when state changes
+              setValue("location", "");
             }}
           >
             <SelectTrigger className="w-full">
@@ -136,7 +139,8 @@ const Postjob = () => {
               ))}
             </SelectContent>
           </Select>
-
+  
+          {/* City Select */}
           <Controller
             name="location"
             control={control}
@@ -161,6 +165,10 @@ const Postjob = () => {
               </Select>
             )}
           />
+        </div>
+  
+        {/* Company Select */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <Controller
             name="company_id"
             control={control}
@@ -186,30 +194,36 @@ const Postjob = () => {
           />
           <AddCompanyDrawer fetchCompanies={fnCompanies} />
         </div>
+  
         {formSubmitted && errors.location && (
           <p className="text-red-500">{errors.location.message}</p>
         )}
         {formSubmitted && errors.company_id && (
           <p className="text-red-500">{errors.company_id.message}</p>
         )}
+  
         <Controller
           name="requirements"
           control={control}
           render={({ field }) => (
-            <MDEditor
-              value={field.value}
-              onChange={field.onChange}
-              textareaProps={{
-                placeholder: "Requirements...",
-                name: field.name,
-              }}
-            />
+            <div className="w-full">
+              <MDEditor
+                value={field.value}
+                onChange={field.onChange}
+                textareaProps={{
+                  placeholder: "Requirements...",
+                  name: field.name,
+                }}
+              />
+            </div>
           )}
         />
         {formSubmitted && errors.requirements && (
           <p className="text-red-500">{errors.requirements.message}</p>
         )}
+  
         {errorNewJob && <p className="text-red-500">{errorNewJob?.message}</p>}
+  
         {loadingNewJob ? (
           <div className="flex justify-center items-center">
             <BarLoader color="#36d7b7" width="100%" className="mb-4" />
@@ -221,7 +235,7 @@ const Postjob = () => {
         )}
       </form>
     </div>
-  );
+  );  
 };
 
 export default Postjob;

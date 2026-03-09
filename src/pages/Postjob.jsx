@@ -40,6 +40,7 @@ const Postjob = () => {
   const {
     register,
     control,
+    setValue,
     formState: { errors },
     handleSubmit,
   } = useForm({

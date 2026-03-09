@@ -1,14 +1,18 @@
-import { createSupabaseClientWithToken } from "@/utils/supabase";
+import { createSupabaseClient } from "@/utils/supabase";
 
 export async function getJobs(
-  accessToken,
+  session,
   { location, company_id, searchQuery }
 ) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+  const supabase = createSupabaseClient(session);
 
   let query = supabase
     .from("jobs")
-    .select("* , company: companies(name , logo_url) , saved: saved_jobs(id)");
+    .select(`
+      *,
+      company:companies!jobs_company_id_fkey(name, logo_url),
+      saved:saved_jobs(id)
+    `);
 
   if (location) {
     query = query.eq("location", location);
@@ -28,133 +32,145 @@ export async function getJobs(
     console.error("Error fetching jobs", error);
     return null;
   }
+
   return data;
 }
 
-export async function saveJob(accessToken, { alreadySaved }, saveData) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function saveJob(session, { alreadySaved }, saveData) {
+  const supabase = createSupabaseClient(session);
 
   if (alreadySaved) {
-    const { data, error: deleteError } = await supabase
+    const { data, error } = await supabase
       .from("saved_jobs")
       .delete()
       .eq("job_id", saveData.job_id);
-    if (deleteError) {
-      console.error("Error deleting saved job", deleteError);
-      return null;
-    }
-    return data;
-  } else {
-    const { data, error: insertError } = await supabase
-      .from("saved_jobs")
-      .insert([saveData])
-      .select();
 
-    if (insertError) {
-      console.error("Error inserting to saved jobs", error);
+    if (error) {
+      console.error("Error deleting saved job", error);
       return null;
     }
     return data;
   }
+
+  const { data, error } = await supabase
+    .from("saved_jobs")
+    .insert([saveData])
+    .select();
+
+  if (error) {
+    console.error("Error inserting saved job", error);
+    return null;
+  }
+  return data;
 }
 
-export async function getSingleJob(accessToken, { job_id }) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function getSingleJob(session, { job_id }) {
+  const supabase = createSupabaseClient(session);
 
-  const { data: jobData, error: jobError } = await supabase
+  const { data, error } = await supabase
     .from("jobs")
-    .select(
-      "* , company: companies(name , logo_url) , applications: applications(*) "
-    )
+    .select(`
+      *,
+      company:companies(name, logo_url),
+      applications:applications(*)
+    `)
     .eq("id", job_id)
     .single();
 
-  if (jobError) {
-    console.error("Error fetching job", jobError);
+  if (error) {
+    console.error("Error fetching job", error);
     return null;
   }
-  return jobData;
+
+  return data;
 }
 
-export async function updateHiringStatus(accessToken, { job_id }, isOpen) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function updateHiringStatus(session, { job_id }, isOpen) {
+  const supabase = createSupabaseClient(session);
 
-  const { data: updateData, error: updateError } = await supabase
+  const { data, error } = await supabase
     .from("jobs")
     .update({ isOpen })
     .eq("id", job_id)
     .select();
 
-  if (updateError) {
-    console.error("Error updating hiring status", updateError);
+  if (error) {
+    console.error("Error updating hiring status", error);
     return null;
   }
-  return updateData;
+
+  return data;
 }
 
-export async function addNewJob(accessToken, _, jobData) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function addNewJob(session, _, jobData) {
+  const supabase = createSupabaseClient(session);
 
-  const { data: addJobData, error: addJobError } = await supabase
+  const { data, error } = await supabase
     .from("jobs")
     .insert([jobData])
     .select();
 
-  if (addJobError) {
-    console.error("Error adding new job", addJobError);
+  if (error) {
+    console.error("Error adding new job", error);
     return null;
   }
-  return addJobData;
+
+  return data;
 }
 
-export async function getSavedJobs(accessToken) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function getSavedJobs(session) {
+  const supabase = createSupabaseClient(session);
 
-  let query = supabase
+  const { data, error } = await supabase
     .from("saved_jobs")
-    .select("* , job:jobs(* , company: companies(name , logo_url))");
-
-  const { data, error } = await query;
+    .select(`
+      *,
+      job:jobs(
+        *,
+        company:companies(name, logo_url)
+      )
+    `);
 
   if (error) {
     console.error("Error fetching saved jobs", error);
     return null;
   }
+
   return data;
 }
 
-export async function getCreatedJobs(accessToken , {recruiter_id}) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function getCreatedJobs(session, { recruiter_id }) {
+  const supabase = createSupabaseClient(session);
 
-  let query = supabase
+  const { data, error } = await supabase
     .from("jobs")
-    .select("*,company: companies(name , logo_url)")
-    .eq("recruiter_id" , recruiter_id)
-
-  const { data, error } = await query;
+    .select(`
+      *,
+      company:companies(name, logo_url)
+    `)
+    .eq("recruiter_id", recruiter_id);
 
   if (error) {
     console.error("Error fetching created jobs", error);
     return null;
   }
+
   return data;
 }
 
-export async function deleteMyJobs(accessToken , {job_id}) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function deleteMyJobs(session, { job_id }) {
+  const supabase = createSupabaseClient(session);
 
-  let query = supabase
+  const { data, error } = await supabase
     .from("jobs")
     .delete()
-    .eq("id" , job_id)
-    .select()
-
-  const { data, error } = await query;
+    .eq("id", job_id)
+    .select();
 
   if (error) {
-    console.error("Error deleting jobs", error);
+    console.error("Error deleting job", error);
     return null;
   }
+
   return data;
 }
-

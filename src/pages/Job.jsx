@@ -59,7 +59,7 @@ const Job = () => {
         <h1 className="gradient-title font-extrabold text-4xl sm:text-6xl  pb-3">
           {dataJob?.title}
         </h1>
-        <div>{dataJob?.company.name}</div>
+        <img src={dataJob?.company?.logo_url} className="h-12" alt={dataJob?.title} />
       </div>
       <div className="flex justify-between">
         <div className="flex gap-2">

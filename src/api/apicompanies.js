@@ -1,43 +1,47 @@
-import { createSupabaseClientWithToken , supabaseUrl } from "@/utils/supabase";
+import { createSupabaseClient , supabaseUrl } from "@/utils/supabase";
 
-export async function getCompanies(accessToken) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function getCompanies(session) {
+  const supabase = createSupabaseClient(session);
 
-  const { data: companyData, error: companyError } = await supabase
+  const { data, error } = await supabase
     .from("companies")
     .select("*");
 
-  if (companyError) {
-    console.error("Error fetching companies", companyError);
+  if (error) {
+    console.error("Error fetching companies", error);
     return null;
   }
-  return companyData;
+
+  return data;
 }
 
-export async function addNewCompany(accessToken , _ , companyData) {
-  const supabase = createSupabaseClientWithToken(accessToken);
+export async function addNewCompany(session, _, companyData) {
+  const supabase = createSupabaseClient(session);
 
-  const random = Math.floor(Math.random()*90000)
-  const filename = `logo-${random}-${companyData.name}`
+  const random = Math.floor(Math.random() * 90000);
+  const filename = `logo-${random}-${companyData.name}`;
 
-  const {error : storageError} = await supabase.storage.from("company-logo").upload(filename , companyData.logo)
+  const { error: storageError } = await supabase
+    .storage
+    .from("company-logo")
+    .upload(filename, companyData.logo);
 
   if (storageError) {
     console.error("Error uploading company logo", storageError);
     return null;
   }
 
-  const logo_url =`${supabaseUrl}/storage/v1/object/public/company-logo//${filename}`
+  const logo_url = `${supabaseUrl}/storage/v1/object/public/company-logo/${filename}`;
 
-  const { data: addCompanyData, error: addCompanyError } = await supabase
+  const { data, error } = await supabase
     .from("companies")
-    .insert([{name:companyData.name ,logo_url}])
-    .select()
+    .insert([{ name: companyData.name, logo_url }])
+    .select();
 
-  if (addCompanyError) {
-    console.error("Error adding new company", addCompanyError);
+  if (error) {
+    console.error("Error adding new company", error);
     return null;
   }
-  return addCompanyData;
-}
 
+  return data;
+}
